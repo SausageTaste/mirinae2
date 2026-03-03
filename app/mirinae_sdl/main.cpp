@@ -1,7 +1,7 @@
-#include <print>
+#include <spdlog/spdlog.h>
 
 
 int main() {
-    std::print("Hello, Mirinae!");
+    SPDLOG_INFO("Hello, Mirinae!");
     return 0;
 }
