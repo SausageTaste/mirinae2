@@ -10,6 +10,7 @@ project(mirinae2
 )
 
 
+find_package(SDL3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
 
