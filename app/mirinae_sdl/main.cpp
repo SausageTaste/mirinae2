@@ -24,6 +24,18 @@ namespace {
             }
         }
 
+        std::pair<int, int> get_win_size() const {
+            int width, height;
+            SDL_GetWindowSize(window_, &width, &height);
+            return { width, height };
+        }
+
+        std::pair<int, int> get_fbuf_size() const {
+            int width, height;
+            SDL_GetWindowSizeInPixels(window_, &width, &height);
+            return { width, height };
+        }
+
     private:
         SDL_Window* window_ = nullptr;
     };
@@ -37,11 +49,20 @@ namespace {
         void do_frame() {}
 
         void on_resize(int width, int height) {
-            SPDLOG_INFO("Window resized: {}x{}", width, height);
+            const auto [fbuf_width, fbuf_height] = window_.get_fbuf_size();
+            SPDLOG_INFO(
+                "Window resized: {}x{}, {}x{}",
+                width,
+                height,
+                fbuf_width,
+                fbuf_height
+            );
         }
 
         SDL_AppResult proc_event(const SDL_Event& e) {
             if (e.type == SDL_EVENT_WINDOW_RESIZED) {
+                this->on_resize(e.window.data1, e.window.data2);
+            } else if (e.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
                 this->on_resize(e.window.data1, e.window.data2);
             }
 
