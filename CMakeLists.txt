@@ -12,6 +12,9 @@ project(mirinae2
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(volk CONFIG REQUIRED)
 
 
+add_subdirectory(lib/auxiliary)
+add_subdirectory(lib/vulkan)
 add_subdirectory(app/mirinae_sdl)

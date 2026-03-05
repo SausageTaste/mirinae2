@@ -1,6 +1,8 @@
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
-#include <spdlog/spdlog.h>
+
+#include "mirinae/auxiliary/log.hpp"
+#include "mirinae/vulkan/renderer_vulkan.hpp"
 
 
 namespace {
@@ -44,9 +46,13 @@ namespace {
     class MainApplication {
 
     public:
-        MainApplication() : window_(1280, 720) { system("chcp 65001"); }
+        MainApplication() : window_(1280, 720) {
+            system("chcp 65001");
 
-        void do_frame() {}
+            renderer_ = mirinae::vulkan::create_vulkan_renderer();
+        }
+
+        void do_frame() { renderer_->do_frame(); }
 
         void on_resize(int width, int height) {
             const auto [fbuf_width, fbuf_height] = window_.get_fbuf_size();
@@ -71,6 +77,7 @@ namespace {
 
     private:
         WindowSDL window_;
+        std::unique_ptr<mirinae::vulkan::IRenderer> renderer_;
     };
 
 }  // namespace

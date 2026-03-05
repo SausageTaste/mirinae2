@@ -1,7 +1,8 @@
 {
     "dependencies": [
         "sdl3",
-        "spdlog"
+        "spdlog",
+        "volk"
     ],
     "builtin-baseline": "fafcc0e93bfba303e5e48790def745d27e6d449b"
 }

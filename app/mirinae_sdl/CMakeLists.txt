@@ -5,6 +5,6 @@ add_executable(mirinae_sdl
 target_compile_features(mirinae_sdl PUBLIC cxx_std_23)
 
 target_link_libraries(mirinae_sdl PUBLIC
+    mirinae::mirinae_vulkan
     SDL3::SDL3
-    spdlog::spdlog
 )
