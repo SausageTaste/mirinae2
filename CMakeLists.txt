@@ -12,6 +12,7 @@ project(mirinae2
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(vk-bootstrap CONFIG REQUIRED)
 find_package(volk CONFIG REQUIRED)
 
 

@@ -1,5 +1,6 @@
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_vulkan.h>
 
 #include "mirinae/auxiliary/log.hpp"
 #include "mirinae/vulkan/renderer_vulkan.hpp"
@@ -14,7 +15,10 @@ namespace {
             SDL_Init(SDL_INIT_VIDEO);
             auto flags = SDL_WINDOW_RESIZABLE;
             window_ = SDL_CreateWindow("Mirinae", width, height, flags);
-            assert(window_);
+            if (!window_) {
+                SPDLOG_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
+                std::abort();
+            }
 
             SDL_ShowWindow(window_);
         }
@@ -38,6 +42,18 @@ namespace {
             return { width, height };
         }
 
+        VkSurfaceKHR* create_vulkan_surface(VkInstance instance) const {
+            VkSurfaceKHR* surface = new VkSurfaceKHR;
+            if (!SDL_Vulkan_CreateSurface(window_, instance, 0, surface)) {
+                SPDLOG_ERROR(
+                    "Failed to create Vulkan surface: {}", SDL_GetError()
+                );
+                delete surface;
+                return nullptr;
+            }
+            return surface;
+        }
+
     private:
         SDL_Window* window_ = nullptr;
     };
@@ -49,7 +65,13 @@ namespace {
         MainApplication() : window_(1280, 720) {
             system("chcp 65001");
 
-            renderer_ = mirinae::vulkan::create_vulkan_renderer();
+            mirinae::vulkan::VulkanRendererCreateInfo cinfo;
+            cinfo.surface_creator_ = [this](void* instance) -> void* {
+                return this->window_.create_vulkan_surface(
+                    static_cast<VkInstance>(instance)
+                );
+            };
+            renderer_ = mirinae::vulkan::create_vulkan_renderer(cinfo);
         }
 
         void do_frame() { renderer_->do_frame(); }
