@@ -83,17 +83,27 @@ namespace mirinae::vulkan {
     }
 
     void Device::destroy() {
-        if (surface_ != VK_NULL_HANDLE)
-            vkDestroySurfaceKHR(instance_, surface_, nullptr);
-
-        if (device_ != VK_NULL_HANDLE)
+        if (device_ != VK_NULL_HANDLE) {
             vkDestroyDevice(device_, nullptr);
+            device_ = VK_NULL_HANDLE;
+        }
 
-        if (debug_messenger_ != VK_NULL_HANDLE)
+        if (surface_ != VK_NULL_HANDLE) {
+            vkDestroySurfaceKHR(instance_, surface_, nullptr);
+            surface_ = VK_NULL_HANDLE;
+        }
+
+        if (debug_messenger_ != VK_NULL_HANDLE) {
             vkb::destroy_debug_utils_messenger(instance_, debug_messenger_);
+            debug_messenger_ = VK_NULL_HANDLE;
+        }
 
-        if (instance_ != VK_NULL_HANDLE)
+        if (instance_ != VK_NULL_HANDLE) {
             vkDestroyInstance(instance_, nullptr);
+            instance_ = VK_NULL_HANDLE;
+        }
+
+        chosenGPU_ = VK_NULL_HANDLE;
     }
 
 }
@@ -142,8 +152,10 @@ namespace mirinae::vulkan {
             vkDestroyImageView(device.logi_device(), view, nullptr);
         img_views_.clear();
 
-        if (swapchain_ != VK_NULL_HANDLE)
+        if (swapchain_ != VK_NULL_HANDLE) {
             vkDestroySwapchainKHR(device.logi_device(), swapchain_, nullptr);
+            swapchain_ = VK_NULL_HANDLE;
+        }
     }
 
 }  // namespace mirinae::vulkan
