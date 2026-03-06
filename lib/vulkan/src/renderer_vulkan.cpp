@@ -38,6 +38,41 @@ namespace {
             assert(_instance != VK_NULL_HANDLE);
             assert(_surface != VK_NULL_HANDLE);
 
+            // vulkan 1.3 features
+            VkPhysicalDeviceVulkan13Features features13{
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
+            };
+            features13.dynamicRendering = true;
+            features13.synchronization2 = true;
+
+            // vulkan 1.2 features
+            VkPhysicalDeviceVulkan12Features features12{
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES
+            };
+            features12.bufferDeviceAddress = true;
+            features12.descriptorIndexing = true;
+
+            // use vkbootstrap to select a gpu.
+            // We want a gpu that can write to the SDL surface and supports
+            // vulkan 1.3 with the correct features
+            vkb::PhysicalDeviceSelector selector{ vkb_inst };
+            vkb::PhysicalDevice physicalDevice =
+                selector.set_minimum_version(1, 3)
+                    .set_required_features_13(features13)
+                    .set_required_features_12(features12)
+                    .set_surface(_surface)
+                    .select()
+                    .value();
+
+            vkb::DeviceBuilder deviceBuilder{ physicalDevice };
+            vkb::Device vkbDevice = deviceBuilder.build().value();
+
+            // Get the VkDevice handle used in the rest of a vulkan application
+            _device = vkbDevice.device;
+            _chosenGPU = physicalDevice.physical_device;
+
+            assert(_device != VK_NULL_HANDLE);
+
             SPDLOG_INFO("VulkanRenderer created");
         }
 
@@ -49,6 +84,8 @@ namespace {
         VkInstance _instance = VK_NULL_HANDLE;
         VkDebugUtilsMessengerEXT _debug_messenger = VK_NULL_HANDLE;
         VkSurfaceKHR _surface = VK_NULL_HANDLE;
+        VkDevice _device = VK_NULL_HANDLE;
+        VkPhysicalDevice _chosenGPU = VK_NULL_HANDLE;
     };
 
 }  // namespace
