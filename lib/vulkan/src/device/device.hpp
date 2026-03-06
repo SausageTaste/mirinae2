@@ -3,12 +3,15 @@
 #include <memory>
 
 #include "mirinae/vulkan/cinfo.hpp"
-#include "mirinae/vulkan/renderer.hpp"
 
 
 namespace mirinae::vulkan {
 
-    std::unique_ptr<IRenderer> create_vulkan_renderer(
+    struct IDevice {
+        virtual ~IDevice() = default;
+    };
+
+    std::unique_ptr<IDevice> create_vulkan_device(
         const VulkanRendererCreateInfo& cinfo
     );
 
