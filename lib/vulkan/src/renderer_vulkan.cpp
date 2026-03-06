@@ -12,7 +12,15 @@ namespace {
 
     public:
         VulkanRenderer(const mirinae::vulkan::VulkanRendererCreateInfo& cinfo) {
-            _device = mirinae::vulkan::create_vulkan_device(cinfo);
+            if (!device_.init(cinfo)) {
+                SPDLOG_ERROR("Failed to initialize Vulkan device");
+                std::abort();
+            }
+
+            if (!swapchain_.init(cinfo.fbuf_w_, cinfo.fbuf_h_, device_)) {
+                SPDLOG_ERROR("Failed to initialize Vulkan swapchain");
+                std::abort();
+            }
         }
 
         ~VulkanRenderer() { SPDLOG_INFO("VulkanRenderer destroyed"); }
@@ -20,7 +28,8 @@ namespace {
         void do_frame() override {}
 
     private:
-        std::unique_ptr<mirinae::vulkan::IDevice> _device;
+        mirinae::vulkan::Device device_;
+        mirinae::vulkan::Swapchain swapchain_;
     };
 
 }  // namespace

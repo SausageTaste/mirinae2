@@ -2,17 +2,43 @@
 
 #include <memory>
 
+#include <volk.h>
+
 #include "mirinae/vulkan/cinfo.hpp"
 
 
 namespace mirinae::vulkan {
 
-    struct IDevice {
-        virtual ~IDevice() = default;
+    class Device {
+
+    public:
+        bool init(const VulkanRendererCreateInfo& cinfo);
+
+        VkPhysicalDevice phys_device() const { return chosenGPU_; }
+        VkDevice logi_device() const { return device_; }
+        VkSurfaceKHR surface() const { return surface_; }
+
+    private:
+        VkInstance instance_ = VK_NULL_HANDLE;
+        VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
+        VkSurfaceKHR surface_ = VK_NULL_HANDLE;
+        VkDevice device_ = VK_NULL_HANDLE;
+        VkPhysicalDevice chosenGPU_ = VK_NULL_HANDLE;
     };
 
-    std::unique_ptr<IDevice> create_vulkan_device(
-        const VulkanRendererCreateInfo& cinfo
-    );
+
+    class Swapchain {
+
+    public:
+        bool init(uint32_t width, uint32_t height, Device& device);
+
+    private:
+        VkSwapchainKHR swapchain_;
+        VkFormat img_format_;
+
+        std::vector<VkImage> images_;
+        std::vector<VkImageView> img_views_;
+        VkExtent2D extent_;
+    };
 
 }  // namespace mirinae::vulkan

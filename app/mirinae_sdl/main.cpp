@@ -67,6 +67,8 @@ namespace {
             system("chcp 65001");
 
             mirinae::vulkan::VulkanRendererCreateInfo cinfo;
+            cinfo.fbuf_w_ = window_.get_fbuf_size().first;
+            cinfo.fbuf_h_ = window_.get_fbuf_size().second;
             cinfo.surface_creator_ = [this](uint64_t instance) -> uint64_t {
                 auto vk_instance = reinterpret_cast<VkInstance>(instance);
                 auto vk_surface = this->window_.create_vulkan_surface(
