@@ -8,6 +8,10 @@
 // Device
 namespace mirinae::vulkan {
 
+    Device::Device() {}
+
+    Device::~Device() { this->destroy(); }
+
     bool Device::init(const VulkanRendererCreateInfo& cinfo) {
         if (VK_SUCCESS != volkInitialize()) {
             SPDLOG_ERROR("Failed to initialize volk");
@@ -76,11 +80,29 @@ namespace mirinae::vulkan {
         return true;
     }
 
-}  // namespace mirinae::vulkan
+    void Device::destroy() {
+        if (surface_ != VK_NULL_HANDLE)
+            vkDestroySurfaceKHR(instance_, surface_, nullptr);
+
+        if (device_ != VK_NULL_HANDLE)
+            vkDestroyDevice(device_, nullptr);
+
+        if (debug_messenger_ != VK_NULL_HANDLE)
+            vkb::destroy_debug_utils_messenger(instance_, debug_messenger_);
+
+        if (instance_ != VK_NULL_HANDLE)
+            vkDestroyInstance(instance_, nullptr);
+    }
+
+}
 
 
 // Swapchain
 namespace mirinae::vulkan {
+
+    Swapchain::Swapchain() {}
+
+    Swapchain::~Swapchain() {}
 
     bool Swapchain::init(uint32_t width, uint32_t height, Device& device) {
         vkb::SwapchainBuilder swapchainBuilder{ device.phys_device(),
@@ -111,6 +133,15 @@ namespace mirinae::vulkan {
         img_views_ = vkbSwapchain.get_image_views().value();
 
         return true;
+    }
+
+    void Swapchain::destroy(Device& device) {
+        for (auto view : img_views_)
+            vkDestroyImageView(device.logi_device(), view, nullptr);
+        img_views_.clear();
+
+        if (swapchain_ != VK_NULL_HANDLE)
+            vkDestroySwapchainKHR(device.logi_device(), swapchain_, nullptr);
     }
 
 }  // namespace mirinae::vulkan

@@ -12,7 +12,11 @@ namespace mirinae::vulkan {
     class Device {
 
     public:
+        Device();
+        ~Device();
+
         bool init(const VulkanRendererCreateInfo& cinfo);
+        void destroy();
 
         VkPhysicalDevice phys_device() const { return chosenGPU_; }
         VkDevice logi_device() const { return device_; }
@@ -30,7 +34,11 @@ namespace mirinae::vulkan {
     class Swapchain {
 
     public:
+        Swapchain();
+        ~Swapchain();
+
         bool init(uint32_t width, uint32_t height, Device& device);
+        void destroy(Device& device);
 
     private:
         VkSwapchainKHR swapchain_;

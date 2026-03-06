@@ -23,7 +23,10 @@ namespace {
             }
         }
 
-        ~VulkanRenderer() { SPDLOG_INFO("VulkanRenderer destroyed"); }
+        ~VulkanRenderer() {
+            swapchain_.destroy(device_);
+            device_.destroy();
+        }
 
         void do_frame() override {}
 
