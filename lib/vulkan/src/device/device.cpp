@@ -32,6 +32,7 @@ namespace mirinae::vulkan {
         // grab the instance
         instance_ = vkb_inst.instance;
         debug_messenger_ = vkb_inst.debug_messenger;
+        volkLoadInstance(instance_);
 
         static_assert(sizeof(uint64_t) == sizeof(VkSurfaceKHR));
         static_assert(sizeof(uint64_t) == sizeof(VkInstance));
@@ -74,6 +75,7 @@ namespace mirinae::vulkan {
         // Get the VkDevice handle used in the rest of a vulkan application
         device_ = vkbDevice.device;
         chosenGPU_ = physicalDevice.physical_device;
+        volkLoadDevice(device_);
 
         assert(device_ != VK_NULL_HANDLE);
 
