@@ -1,3 +1,5 @@
+#include <volk.h>
+
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_vulkan.h>
@@ -42,14 +44,13 @@ namespace {
             return { width, height };
         }
 
-        VkSurfaceKHR* create_vulkan_surface(VkInstance instance) const {
-            VkSurfaceKHR* surface = new VkSurfaceKHR;
-            if (!SDL_Vulkan_CreateSurface(window_, instance, 0, surface)) {
+        VkSurfaceKHR create_vulkan_surface(VkInstance instance) const {
+            VkSurfaceKHR surface = VK_NULL_HANDLE;
+            if (!SDL_Vulkan_CreateSurface(window_, instance, 0, &surface)) {
                 SPDLOG_ERROR(
                     "Failed to create Vulkan surface: {}", SDL_GetError()
                 );
-                delete surface;
-                return nullptr;
+                return VK_NULL_HANDLE;
             }
             return surface;
         }
@@ -66,10 +67,12 @@ namespace {
             system("chcp 65001");
 
             mirinae::vulkan::VulkanRendererCreateInfo cinfo;
-            cinfo.surface_creator_ = [this](void* instance) -> void* {
-                return this->window_.create_vulkan_surface(
-                    static_cast<VkInstance>(instance)
+            cinfo.surface_creator_ = [this](uint64_t instance) -> uint64_t {
+                auto vk_instance = reinterpret_cast<VkInstance>(instance);
+                auto vk_surface = this->window_.create_vulkan_surface(
+                    vk_instance
                 );
+                return reinterpret_cast<uint64_t>(vk_surface);
             };
             renderer_ = mirinae::vulkan::create_vulkan_renderer(cinfo);
         }
@@ -77,11 +80,12 @@ namespace {
         void do_frame() { renderer_->do_frame(); }
 
         void on_resize(int width, int height) {
+            const auto [win_width, win_height] = window_.get_win_size();
             const auto [fbuf_width, fbuf_height] = window_.get_fbuf_size();
             SPDLOG_INFO(
                 "Window resized: {}x{}, {}x{}",
-                width,
-                height,
+                win_width,
+                win_height,
                 fbuf_width,
                 fbuf_height
             );

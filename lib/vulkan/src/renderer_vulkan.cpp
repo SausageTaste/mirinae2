@@ -31,8 +31,11 @@ namespace {
             // grab the instance
             _instance = vkb_inst.instance;
             _debug_messenger = vkb_inst.debug_messenger;
-            _surface = static_cast<VkSurfaceKHR>(
-                cinfo.surface_creator_(_instance)
+
+            static_assert(sizeof(uint64_t) == sizeof(VkSurfaceKHR));
+            static_assert(sizeof(uint64_t) == sizeof(VkInstance));
+            _surface = reinterpret_cast<VkSurfaceKHR>(
+                cinfo.surface_creator_(reinterpret_cast<uint64_t>(_instance))
             );
 
             assert(_instance != VK_NULL_HANDLE);
