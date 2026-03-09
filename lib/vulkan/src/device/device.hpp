@@ -22,12 +22,17 @@ namespace mirinae::vulkan {
         VkDevice logi_device() const { return device_; }
         VkSurfaceKHR surface() const { return surface_; }
 
+        VkQueue graphics_q() const { return graphics_queue_; }
+        uint32_t graphics_q_family() const { return graphics_queue_family_; }
+
     private:
         VkInstance instance_ = VK_NULL_HANDLE;
         VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
         VkSurfaceKHR surface_ = VK_NULL_HANDLE;
         VkDevice device_ = VK_NULL_HANDLE;
         VkPhysicalDevice chosenGPU_ = VK_NULL_HANDLE;
+        VkQueue graphics_queue_ = VK_NULL_HANDLE;
+        uint32_t graphics_queue_family_ = 0;
     };
 
 

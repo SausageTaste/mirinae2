@@ -75,9 +75,12 @@ namespace mirinae::vulkan {
         // Get the VkDevice handle used in the rest of a vulkan application
         device_ = vkbDevice.device;
         chosenGPU_ = physicalDevice.physical_device;
-        volkLoadDevice(device_);
+        graphics_queue_ = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+        graphics_queue_family_ =
+            vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
 
         assert(device_ != VK_NULL_HANDLE);
+        volkLoadDevice(device_);
 
         return true;
     }
@@ -106,7 +109,7 @@ namespace mirinae::vulkan {
         chosenGPU_ = VK_NULL_HANDLE;
     }
 
-}
+}  // namespace mirinae::vulkan
 
 
 // Swapchain
